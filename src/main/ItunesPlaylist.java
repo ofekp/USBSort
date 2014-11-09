@@ -79,6 +79,7 @@ public class ItunesPlaylist implements Playlist {
 			}
 		}
 		
+		// Create the folder
 		try {
 			File tmpFile = new File(destPath + name + "\\");
 			tmpFile.mkdir();
@@ -98,6 +99,7 @@ public class ItunesPlaylist implements Playlist {
 		File songFile;
 		Song song;
 		boolean allFilesValid = true;
+		Main.addUserInfoLine("Checking all song files...");
 		try {
 			for (Integer songKey : keyList) {
 				songNum++;
@@ -106,7 +108,7 @@ public class ItunesPlaylist implements Playlist {
 				song = songsHashTable.get(songKey);
 				songFile = findSong(song.getName() + " - " + song.getArtist() + ".mp3");
 				if (songFile == null) {
-					allFilesValid = allFilesValid && validateSong(song);
+					allFilesValid &= validateSong(song);
 				}
 			}
 		} catch (Exception e) {
@@ -114,7 +116,11 @@ public class ItunesPlaylist implements Playlist {
 		}
 		if (!allFilesValid) {
 			System.out.println("Aborting. Please fix all files first.");
+			Main.addUserInfoLine("Please fix the above error.");
 			return false;
+		} else {
+			Main.addUserInfoLine("Good to go!");
+			Main.addUserInfoLine("Creating your playlist...");
 		}
 		
 		// Actual copy of files to the folder
@@ -138,7 +144,10 @@ public class ItunesPlaylist implements Playlist {
 			removeRestOfSongs();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
+			return false;
 		}
+		
+		Main.addUserInfoLine("Done.");
 		return true;
 	}
 
@@ -250,11 +259,13 @@ public class ItunesPlaylist implements Playlist {
 			srcSong = new File(song.getPath());
 		} catch (Exception e) {
 			System.out.println("Could not open the file " + song.getPath());
+			Main.addUserInfoLine("  Could not open the file " + song.getPath());
 			return false;
 		}
 		
 		if(!srcSong.canRead()) {
 			System.out.println("No permissions for file " + song.getPath());
+			Main.addUserInfoLine("  No permissions for file " + song.getPath());
 			return false;
 		}
 		

@@ -1,8 +1,11 @@
 package main;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -26,6 +29,8 @@ public class Main {
 	private static String playlistDestPath = null;
 	private static String playlistName = null;
 	
+	public static StyledText userInfo = null;
+	
 	/**
 	 * @param args
 	 */
@@ -41,7 +46,7 @@ public class Main {
 		display = new Display();
 		shell = new Shell(display);
 		
-		shell.setSize(320, 180);
+		shell.setSize(320, 360);
 		shell.setText("USB Playlist Maker");
 		
 		GridLayout layout = new GridLayout(3, false);
@@ -242,8 +247,19 @@ public class Main {
 		    }
 		});	
 		
+		userInfo = new StyledText(shell, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
+		tmp_gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		tmp_gd.horizontalSpan = 3;
+		userInfo.setLayoutData(tmp_gd);
+		userInfo.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent arg0) {
+				userInfo.setTopIndex(userInfo.getLineCount() - 1);
+			}
+		});
+		userInfo.setText("Hello!\nWellcome to USBSort.\n\n");
+		
 	    shell.open();
-
 	    while (!shell.isDisposed()) {
 	      if (!display.readAndDispatch())
 	        display.sleep();
@@ -262,5 +278,13 @@ public class Main {
 		{
 			executeButton.setEnabled(false);			
 		}
+	}
+	
+	public static void addUserInfoLine(final String lineStr) {
+		Display.getDefault().asyncExec(new Runnable() {
+		    public void run() {
+		    	Main.userInfo.setText(Main.userInfo.getText() + lineStr + "\n");
+		    }
+		});
 	}
 }
